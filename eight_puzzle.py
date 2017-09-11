@@ -1,13 +1,28 @@
-
-
 class eight_puzzle():
-
 
     def __init__(self):
         self.free_space_row = -1
         self.free_space_col = -1
         self.board = [[0 for x in range(3)] for y in range(3)]
 
+    def goal_test(self):
+        test_result = True
+        goal = eight_puzzle()
+        goal.set_board(0)
+        for r in range(3):
+            for c in range(3):
+                if self.board[r][c] != goal.board[r][c]:
+                    test_result = False
+        return test_result
+
+    def make_child(self):
+        child = eight_puzzle()
+        for r in range(3):
+            for c in range(3):
+                child.board[r][c] = self.board[r][c]
+                child.free_space_row = self.free_space_row
+                child.free_space_col = self.free_space_col
+        return child
 
     def set_board(self, index):
         if index == 0:
@@ -34,7 +49,6 @@ class eight_puzzle():
             self.board[2][0] = 7
             self.board[2][1] = 8
             self.board[2][2] = 6
-
 
     def print_board(self):
         for row in range(3):
@@ -103,7 +117,6 @@ class eight_puzzle():
                 move = self.board[1][2]
                 moves_list.append((move))
         return moves_list
-
 
     def move(self, value):
         if self.free_space_row == 0:
