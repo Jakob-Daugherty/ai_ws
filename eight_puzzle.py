@@ -49,6 +49,31 @@ class eight_puzzle():
             self.board[2][0] = 7
             self.board[2][1] = 8
             self.board[2][2] = 6
+        if index == 2:
+            self.free_space_row = 0
+            self.free_space_col = 0
+            self.board[0][0] = '.'
+            self.board[0][1] = 5
+            self.board[0][2] = 2
+            self.board[1][0] = 1
+            self.board[1][1] = 8
+            self.board[1][2] = 3
+            self.board[2][0] = 4
+            self.board[2][1] = 7
+            self.board[2][2] = 6
+        if index == 3:
+            self.free_space_row = 2
+            self.free_space_col = 1
+            self.board[0][0] = 8
+            self.board[0][1] = 6
+            self.board[0][2] = 7
+            self.board[1][0] = 2
+            self.board[1][1] = 5
+            self.board[1][2] = 4
+            self.board[2][0] = 3
+            self.board[2][1] = '.'
+            self.board[2][2] = 1
+
 
     def print_board(self):
         for row in range(3):
