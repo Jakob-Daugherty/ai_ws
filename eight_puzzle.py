@@ -1,4 +1,9 @@
+from math import fabs
+
 class eight_puzzle():
+
+#    goal_row = {1:0,2:0,3:0,4:1,5:1,6:1,7:2,8:2}
+#    goal_col = {1:0,2:1,3:2,4:0,5:1,6:2,7:0,8:1}
 
     def __init__(self):
         self.free_space_row = -1
@@ -14,6 +19,23 @@ class eight_puzzle():
                 if self.board[r][c] != goal.board[r][c]:
                     test_result = False
         return test_result
+
+    def calc_h_value(self):
+        goal_row = dict({1: int(0), 2: int(0), 3: int(0), 4: int(1), 5: int(1), 6: int(1), 7: int(2), 8: int(2)})
+        goal_col = dict({1: int(0), 2: int(1), 3: int(2), 4: int(0), 5: int(1), 6: int(2), 7: int(0), 8: int(1)})
+        value = 0
+        for r in range(3):
+            for c in range(3):
+                piece = self.board[r][c]
+                if piece != '.':
+                    goal_r = str(goal_row.get(int(piece)))
+                    goal_c = str(goal_col.get(int(piece)))
+                    delta_r = r - int(goal_r)
+                    delta_c = c - int(goal_c)
+                    distance = fabs(delta_r) + fabs(delta_c)
+                    value = value + distance
+        return value
+
 
     def make_child(self):
         child = eight_puzzle()
