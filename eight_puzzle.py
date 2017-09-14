@@ -1,5 +1,8 @@
 from math import fabs
 
+goal_row = dict({1: int(0), 2: int(0), 3: int(0), 4: int(1), 5: int(1), 6: int(1), 7: int(2), 8: int(2)})
+goal_col = dict({1: int(0), 2: int(1), 3: int(2), 4: int(0), 5: int(1), 6: int(2), 7: int(0), 8: int(1)})
+
 class eight_puzzle():
 
 #    goal_row = {1:0,2:0,3:0,4:1,5:1,6:1,7:2,8:2}
@@ -21,8 +24,8 @@ class eight_puzzle():
         return test_result
 
     def calc_h_value(self):
-        goal_row = dict({1: int(0), 2: int(0), 3: int(0), 4: int(1), 5: int(1), 6: int(1), 7: int(2), 8: int(2)})
-        goal_col = dict({1: int(0), 2: int(1), 3: int(2), 4: int(0), 5: int(1), 6: int(2), 7: int(0), 8: int(1)})
+        #goal_row = dict({1: int(0), 2: int(0), 3: int(0), 4: int(1), 5: int(1), 6: int(1), 7: int(2), 8: int(2)})
+        #goal_col = dict({1: int(0), 2: int(1), 3: int(2), 4: int(0), 5: int(1), 6: int(2), 7: int(0), 8: int(1)})
         value = 0
         for r in range(3):
             for c in range(3):

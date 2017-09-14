@@ -145,6 +145,7 @@ def a_star(problem, fringe):
                 return False
         for item in fringe:
             item.h_value = item.puzzle_state.calc_h_value()
+            item.h_value = item.h_value + len(item.choiceList)
         fringe.sort(key=lambda eight_puzzle_node: eight_puzzle_node.h_value, reverse=True)
         #for item in unsorted_nodes:
         #    fringe.append(item)
