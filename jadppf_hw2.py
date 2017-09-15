@@ -233,13 +233,13 @@ def main():
         search_choice = 0
         while(True):
             print '\nAvailable search methods.'
-            print '[0] Iterative Deepening Tree Search'
-            print '[1] Depth-First Graph Search'
-            print '[2] A* with heuristics\n'
+            print '[1] Iterative Deepening Tree Search'
+            print '[2] Depth-First Graph Search'
+            print '[3] A* with heuristics\n'
             try:
-                search_choice = int(input('Please select search method (0..2) ->\n'))
-                if search_choice not in range(0,3):
-                    print 'Err: Please select number between 0 and 2 then try again'
+                search_choice = int(input('Please select search method (1..3) ->\n'))
+                if search_choice not in range(1,4):
+                    print 'Err: Please select number between 1 and 3 then try again'
                     continue
             except Exception as err:
                 print 'Error'
@@ -249,27 +249,27 @@ def main():
         puzzle_choice = 0
         while(True):
             print '\nPuzzle configurations'
-            print '[0]'
+            print '[1]'
             demo = eight_puzzle.eight_puzzle()
             demo.set_board(0)
             demo.print_board()
-            print '[1]'
+            print '[2]'
             demo.set_board(1)
             demo.print_board()
-            print '[2]'
+            print '[3]'
             demo.set_board(2)
             demo.print_board()
             try:
-                puzzle_choice = int(input('Please select puzzle configuration (0..2) ->\n'))
-                if puzzle_choice not in range(0,3):
-                    print 'Err: Please select number between 0 and 2 then try again'
+                puzzle_choice = int(input('Please select puzzle configuration (1..3) ->\n'))
+                if puzzle_choice not in range(1,4):
+                    print 'Err: Please select number between 1 and 3 then try again'
                     continue
             except Exception as err:
                 print 'Error'
                 print err
                 continue
             break
-        jadppf_hw2(search_choice, puzzle_choice)
+        jadppf_hw2(search_choice - 1, puzzle_choice - 1)
         #again = str(input('\nAgain (y/n)?\n'))
         #if again == 'n':
         #    exit = False
