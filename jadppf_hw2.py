@@ -3,6 +3,8 @@ from collections import deque
 from copy import deepcopy
 from time import time
 
+
+
 class eight_puzzle_node():
 
     def __init__(self, puzzle, choice, choiceList, nodeId):
@@ -30,7 +32,7 @@ def i_ds(problem, fringe):
         print 'the depth is:'
         print depthLimit
         print
-        result = dfs_tree(problem, fringe, depthLimit)
+        result = dfs_tree(problem, fringe, depthLimit,)
 
         if result != False:
             if result == -1:
@@ -57,12 +59,12 @@ def dfs_tree(problem, fringe, depthLimit):
         if len(fringe) == 0:
             return False
         current = fringe.popleft()
-  #      if current.nodeId < 5:
-  #          print '-----'
-  #          print current.nodeId
-  #          print '-----'
-  #          current.puzzle_state.print_board()
-  #          print '-----'
+        if current.nodeId < 5:
+            print '-----'
+            print 'node -> ',current.nodeId + 1
+            current.puzzle_state.print_board()
+            print '-----'
+
         if current.puzzle_state.goal_test():
             #print '<----------->'
             #print '<-- Depth -->'
@@ -95,19 +97,20 @@ def dfgs(problem, fringe):
         current = fringe.popleft()
         if current.nodeId < 5:
             print '-----'
-            print current.nodeId
-            print '-----'
+            print 'node -> ',current.nodeId + 1
             current.puzzle_state.print_board()
             print '-----'
+
         if current.puzzle_state.goal_test():
             return current
-        if current not in closed:
-            closed.append(current)
+        if current.puzzle_state not in closed:
+            closed.append(current.puzzle_state)
             expandChoices = current.puzzle_state.possible_moves()
             for choice in expandChoices:
                 new_node = eight_puzzle_node(current.puzzle_state, choice, current.choiceList, new_id)
-                new_id += 1
-                fringe.append(new_node)
+                if new_node.puzzle_state not in closed:
+                    new_id += 1
+                    fringe.append(new_node)
                 if new_id > 100000:
                     print '<------------------------>'
                     print '<-- Node Limit Reached -->'
@@ -118,34 +121,39 @@ def dfgs(problem, fringe):
 def a_star(problem, fringe):
     puzzle = problem.make_child()
     list = []
-    #unsorted_nodes = []
+    closed = []
     root = eight_puzzle_node(puzzle, '.', list, 0)
     new_id = 1
     fringe.append(root)
+    counter = 0
     while(True):
         if len(fringe) == 0:
             return False
         current = fringe.pop()
-        print '<---->'
-        print current.nodeId
-        print current.h_value
-        print '<---->'
+        if counter < 5:
+            print '-----'
+            print 'node -> ',counter + 1
+            current.puzzle_state.print_board()
+            print '-----'
+            counter += 1
         if current.puzzle_state.goal_test():
             return current
-        expandChoices = current.puzzle_state.possible_moves()
-        for choice in expandChoices:
-            new_node = eight_puzzle_node(current.puzzle_state, choice, current.choiceList, new_id)
-            new_id += 1
-            #unsorted_nodes.append(new_node)
-            fringe.append(new_node)
-            if new_id > 100000:
-                print '<------------------------>'
-                print '<-- Node Limit Reached -->'
-                print '<------------------------>'
-                return False
-        for item in fringe:
-            item.h_value = item.puzzle_state.calc_h_value()
-            item.h_value = item.h_value + len(item.choiceList)
+        if current.puzzle_state not in closed:
+            closed.append(current.puzzle_state)
+            expandChoices = current.puzzle_state.possible_moves()
+            for choice in expandChoices:
+                new_node = eight_puzzle_node(current.puzzle_state, choice, current.choiceList, new_id)
+                new_node.h_value = new_node.puzzle_state.calc_h_value()
+                #new_node.h_value = new_node.h_value + new_node.puzzle_state.calc_g_value()
+                if new_node.puzzle_state not in closed:
+                    fringe.append(new_node)
+                    new_id += 1
+                if new_id > 100000:
+                    print '<------------------------>'
+                    print '<-- Node Limit Reached -->'
+                    print '<------------------------>'
+                    return False
+
         fringe.sort(key=lambda eight_puzzle_node: eight_puzzle_node.h_value, reverse=True)
         #for item in unsorted_nodes:
         #    fringe.append(item)
@@ -158,35 +166,45 @@ def a_star(problem, fringe):
 
 
 
-def main():
+def jadppf_hw2(search_choice, puzzle_choice):
     print '<-------------------->'
     print '<---> Timer Mark <--->'
     mark = time()
     print '<-------------------->'
-
-    print("\nWelcome to main\n")
     game = eight_puzzle.eight_puzzle()
-    # Use board 1
-    #game.set_board(1)
-    # use board 2
-    game.set_board(2)
-    # use board 3
-    #game.set_board(3)
+    if puzzle_choice == 1:
+        # use board 2
+        game.set_board(2)
+    if puzzle_choice == 2:
+        # use board 3
+        game.set_board(3)
+    if puzzle_choice == 0:
+        # Use board 1
+        game.set_board(1)
     game.print_board()
-    possible_moves = game.possible_moves()
-    print
-    print possible_moves
+    #possible_moves = game.possible_moves()
+    #print
+    #print possible_moves
     print '<---------------------->'
     print '<---> Start Search <--->'
     print '<---------------------->'
-    fringe = deque([])
-    a_star_list = []
+    result = False
+    if search_choice == 1:
+
+        fringe = deque([])
+        result = dfgs(game, fringe)
+    if search_choice == 2:
+        a_star_list = []
     #result = dfs_tree(game, fringe)
     #result = i_ds(game, fringe)
-    #result = dfgs(game, fringe)
-    result = a_star(game, a_star_list)
+        result = a_star(game, a_star_list)
+    else:
+        fringe = deque([])
+        result = i_ds(game, fringe)
     if result != False:
+        print 'Solution sequence'
         result.print_choiceList()
+        print 'Num Nodes Expanded'
         result.print_nodeId()
 
 
@@ -207,6 +225,62 @@ def main():
         value = str(int(diff)) + ' sec'
         print value
 
-    print("\nEnd main")
+
+def main():
+    print '\nWelcome to main\n'
+    exit = True
+    while(exit):
+        search_choice = 0
+        while(True):
+            print '\nAvailable search methods.'
+            print '[0] Iterative Deepening Tree Search'
+            print '[1] Depth-First Graph Search'
+            print '[2] A* with heuristics\n'
+            try:
+                search_choice = int(input('Please select search method (0..2) ->\n'))
+                if search_choice not in range(0,3):
+                    print 'Err: Please select number between 0 and 2 then try again'
+                    continue
+            except Exception as err:
+                print 'Error'
+                print err
+                continue
+            break
+        puzzle_choice = 0
+        while(True):
+            print '\nPuzzle configurations'
+            print '[0]'
+            demo = eight_puzzle.eight_puzzle()
+            demo.set_board(0)
+            demo.print_board()
+            print '[1]'
+            demo.set_board(1)
+            demo.print_board()
+            print '[2]'
+            demo.set_board(2)
+            demo.print_board()
+            try:
+                puzzle_choice = int(input('Please select puzzle configuration (0..2) ->\n'))
+                if puzzle_choice not in range(0,3):
+                    print 'Err: Please select number between 0 and 2 then try again'
+                    continue
+            except Exception as err:
+                print 'Error'
+                print err
+                continue
+            break
+        jadppf_hw2(search_choice, puzzle_choice)
+        #again = str(input('\nAgain (y/n)?\n'))
+        #if again == 'n':
+        #    exit = False
+
+
+
+
+
+
+
+
+    print '\nEnd main\n'
 
 main()

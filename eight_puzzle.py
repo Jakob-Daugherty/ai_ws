@@ -2,6 +2,8 @@ from math import fabs
 
 goal_row = dict({1: int(0), 2: int(0), 3: int(0), 4: int(1), 5: int(1), 6: int(1), 7: int(2), 8: int(2)})
 goal_col = dict({1: int(0), 2: int(1), 3: int(2), 4: int(0), 5: int(1), 6: int(2), 7: int(0), 8: int(1)})
+init2_row = dict({1: int(1), 2: int(0), 3: int(1), 4: int(2), 5: int(0), 6: int(2), 7: int(2), 8: int(1)})
+init2_col = dict({1: int(0), 2: int(2), 3: int(2), 4: int(0), 5: int(1), 6: int(2), 7: int(1), 8: int(1)})
 
 class eight_puzzle():
 
@@ -35,6 +37,20 @@ class eight_puzzle():
                     goal_c = str(goal_col.get(int(piece)))
                     delta_r = r - int(goal_r)
                     delta_c = c - int(goal_c)
+                    distance = fabs(delta_r) + fabs(delta_c)
+                    value = value + distance
+        return value
+
+    def calc_g_value(self):
+        value = 0
+        for r in range(3):
+            for c in range(3):
+                piece = self.board[r][c]
+                if piece != '.':
+                    init_r = str(init2_row.get(int(piece)))
+                    init_c = str(init2_col.get(int(piece)))
+                    delta_r = r - int(init_r)
+                    delta_c = c - int(init_c)
                     distance = fabs(delta_r) + fabs(delta_c)
                     value = value + distance
         return value
