@@ -17,6 +17,7 @@ class eight_puzzle_node():
             self.choiceList.append(choice)
         self.nodeId = nodeId
         self.h_value = -1
+        self.g_value = -1
 
     def print_puzzle_state(self):
         self.puzzle_state.print_board()
@@ -67,10 +68,6 @@ def dfs_tree(problem, fringe, depthLimit):
             print '-----'
 
         if current.puzzle_state.goal_test():
-            #print '<----------->'
-            #print '<-- Depth -->'
-            #print depth
-            #print '<----------->'
             return current
         expandChoices = current.puzzle_state.possible_moves()
         for choice in expandChoices:
@@ -86,7 +83,7 @@ def dfs_tree(problem, fringe, depthLimit):
                 return -1
 
 def dfgs(problem, fringe):
-    closed = deque([])
+    closed = []
     puzzle = problem.make_child()
     list = []
     root = eight_puzzle_node(puzzle, '.', list, 0)
@@ -104,16 +101,37 @@ def dfgs(problem, fringe):
 
         if current.puzzle_state.goal_test():
             return current
-        if current.puzzle_state not in closed:
+
+        cmp_result = False
+        for item in closed:
+            cmp_result = current.puzzle_state.compare_2_states(item)
+            if cmp_result == True:
+                break
+
+
+        if cmp_result == False:
             closed.append(current.puzzle_state)
             expandChoices = current.puzzle_state.possible_moves()
             for choice in expandChoices:
-                new_node = eight_puzzle_node(current.puzzle_state, choice, current.choiceList, new_id)
-                if new_node.puzzle_state not in closed:
-                    new_id += 1
-                    fringe.append(new_node)
-#                new_id += 1
-#                fringe.append(new_node)
+                new_state = current.puzzle_state
+                solun = current.choiceList
+                new_node = eight_puzzle_node(new_state, choice, solun, new_id)
+
+#                new_cmp_result = False
+#                for item in closed:
+#                    new_cmp_result = new_node.puzzle_state.compare_2_states(item)
+#                    if new_cmp_result == True:
+#                        break
+
+#                if new_cmp_result == False:
+#                    new_id += 1
+#                    fringe.append(new_node)
+#                    print 'new id ->', new_node.nodeId
+
+
+                new_id += 1
+                fringe.append(new_node)
+                print 'new id ->', new_node.nodeId
                 if new_id > 100000:
                     print '<------------------------>'
                     print '<-- Node Limit Reached -->'
@@ -121,7 +139,7 @@ def dfgs(problem, fringe):
                     return False
     return False
 
-def a_star(problem, fringe):
+def a_star(problem, fringe, puzzle_choice):
     puzzle = problem.make_child()
     list = []
     closed = []
@@ -133,40 +151,58 @@ def a_star(problem, fringe):
         if len(fringe) == 0:
             return False
         current = fringe.pop()
-        print current.nodeId
-        print current.h_value
-        current.puzzle_state.print_board()
-        print '--->'
+        current.h_value = current.puzzle_state.calc_h_value()
+        current.g_value = current.puzzle_state.calc_g_value(puzzle_choice)
+
+#        print 'g value ->', current.g_value
+#        print current.nodeId
+#        print current.h_value
+#        current.puzzle_state.print_board()
+#        print '--->'
+
         if counter < 5:
             print '-----'
             print 'node -> ',counter + 1
             current.puzzle_state.print_board()
             print '-----'
             counter += 1
+
         if current.puzzle_state.goal_test():
             return current
-        if current.puzzle_state not in closed:
+
+        cmp_result = False
+        for item in closed:
+            cmp_result = current.puzzle_state.compare_2_states(item)
+            if cmp_result == True:
+                break
+
+        if cmp_result == False:
             closed.append(current.puzzle_state)
             expandChoices = current.puzzle_state.possible_moves()
+            print expandChoices
             for choice in expandChoices:
-                new_node = eight_puzzle_node(current.puzzle_state, choice, current.choiceList, new_id)
+                puzzle = current.puzzle_state.make_child()
+                solun = current.choiceList
+                new_node = eight_puzzle_node(puzzle, choice, solun, new_id)
                 new_node.h_value = new_node.puzzle_state.calc_h_value()
-                #new_node.h_value = new_node.h_value + new_node.puzzle_state.calc_g_value()
-                if new_node.puzzle_state not in closed:
-                    fringe.append(new_node)
-                    new_id += 1
-#                fringe.append(new_node)
-#                new_id += 1
+                new_node.g_value = new_node.puzzle_state.calc_g_value(puzzle_choice)
+
+#                print 'g value ->', new_node.g_value
+
+                fringe.append(new_node)
+                new_id += 1
+                print 'expand on ->', choice
+
                 if new_id > 100000:
                     print '<------------------------>'
                     print '<-- Node Limit Reached -->'
                     print '<------------------------>'
                     return False
 
-        fringe.sort(key=lambda eight_puzzle_node: eight_puzzle_node.h_value, reverse=True)
-#        sorted(fringe, key=attrgetter('h_value'))
-        #for item in unsorted_nodes:
-        #    fringe.append(item)
+
+#        fringe.sort(key=attrgetter('g_value'), reverse=False)
+        fringe.sort(key=attrgetter('h_value'), reverse=True)
+
 
 
 
@@ -207,7 +243,7 @@ def jadppf_hw2(search_choice, puzzle_choice):
         a_star_list = []
     #result = dfs_tree(game, fringe)
     #result = i_ds(game, fringe)
-        result = a_star(game, a_star_list)
+        result = a_star(game, a_star_list, puzzle_choice + 1)
     if search_choice == 0:
         fringe = deque([])
         result = i_ds(game, fringe)
