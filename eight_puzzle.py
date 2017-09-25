@@ -1,5 +1,4 @@
 from math import fabs
-
 goal_row = dict({1: int(0), 2: int(0), 3: int(0), 4: int(1), 5: int(1), 6: int(1), 7: int(2), 8: int(2)})
 goal_col = dict({1: int(0), 2: int(1), 3: int(2), 4: int(0), 5: int(1), 6: int(2), 7: int(0), 8: int(1)})
 init1_row = dict({1: int(0), 2: int(1), 3: int(0), 4: int(1), 5: int(1), 6: int(2), 7: int(2), 8: int(2)})
@@ -8,17 +7,11 @@ init2_row = dict({1: int(1), 2: int(0), 3: int(1), 4: int(2), 5: int(0), 6: int(
 init2_col = dict({1: int(0), 2: int(2), 3: int(2), 4: int(0), 5: int(1), 6: int(2), 7: int(1), 8: int(1)})
 init3_row = dict({1: int(2), 2: int(1), 3: int(2), 4: int(1), 5: int(1), 6: int(0), 7: int(0), 8: int(0)})
 init3_col = dict({1: int(2), 2: int(0), 3: int(0), 4: int(2), 5: int(1), 6: int(1), 7: int(2), 8: int(0)})
-
 class eight_puzzle():
-
-#    goal_row = {1:0,2:0,3:0,4:1,5:1,6:1,7:2,8:2}
-#    goal_col = {1:0,2:1,3:2,4:0,5:1,6:2,7:0,8:1}
-
     def __init__(self):
         self.free_space_row = -1
         self.free_space_col = -1
         self.board = [[0 for x in range(3)] for y in range(3)]
-
     def compare_2_states(self, state):
         value = True
         for r in range(3):
@@ -26,7 +19,6 @@ class eight_puzzle():
                 if self.board[r][c] != state.board[r][c]:
                     value = False
         return value
-
     def goal_test(self):
         test_result = True
         goal = eight_puzzle()
@@ -36,10 +28,7 @@ class eight_puzzle():
                 if self.board[r][c] != goal.board[r][c]:
                     test_result = False
         return test_result
-
     def calc_h_value(self):
-        #goal_row = dict({1: int(0), 2: int(0), 3: int(0), 4: int(1), 5: int(1), 6: int(1), 7: int(2), 8: int(2)})
-        #goal_col = dict({1: int(0), 2: int(1), 3: int(2), 4: int(0), 5: int(1), 6: int(2), 7: int(0), 8: int(1)})
         value = 0
         for r in range(3):
             for c in range(3):
@@ -52,7 +41,6 @@ class eight_puzzle():
                     distance = fabs(delta_r) + fabs(delta_c)
                     value = value + distance
         return value
-
     def calc_g_value(self, puzzle_choice):
         value = 0
         if puzzle_choice == 1:
@@ -89,8 +77,6 @@ class eight_puzzle():
                         distance = fabs(delta_r) + fabs(delta_c)
                         value = value + distance
         return value
-
-
     def make_child(self):
         child = eight_puzzle()
         for r in range(3):
@@ -99,7 +85,6 @@ class eight_puzzle():
                 child.free_space_row = self.free_space_row
                 child.free_space_col = self.free_space_col
         return child
-
     def set_board(self, index):
         if index == 0:
             self.free_space_row = 2
@@ -149,12 +134,9 @@ class eight_puzzle():
             self.board[2][0] = 3
             self.board[2][1] = '.'
             self.board[2][2] = 1
-
-
     def print_board(self):
         for row in range(3):
             print self.board[row][0], self.board[row][1], self.board[row][2]
-
     def possible_moves(self):
         moves_list = []
         if self.free_space_row == 0:
@@ -218,7 +200,6 @@ class eight_puzzle():
                 move = self.board[1][2]
                 moves_list.append((move))
         return moves_list
-
     def move(self, value):
         if self.free_space_row == 0:
             if self.free_space_col == 0:

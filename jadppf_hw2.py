@@ -3,10 +3,7 @@ from collections import deque
 from copy import deepcopy
 from time import time
 from operator import attrgetter
-
-
 class eight_puzzle_node():
-
     def __init__(self, puzzle, choice, choiceList, nodeId):
         result = False
         self.puzzle_state = puzzle.make_child()
@@ -18,16 +15,12 @@ class eight_puzzle_node():
         self.nodeId = nodeId
         self.h_value = -1
         self.g_value = -1
-
     def print_puzzle_state(self):
         self.puzzle_state.print_board()
-
     def print_choiceList(self):
         print self.choiceList
-
     def print_nodeId(self):
         print self.nodeId
-
 def i_ds(problem, fringe):
     depthLimit = 1
     while(True):
@@ -35,7 +28,6 @@ def i_ds(problem, fringe):
         print depthLimit
         print
         result = dfs_tree(problem, fringe, depthLimit,)
-
         if result != False:
             if result == -1:
                 break
@@ -47,10 +39,6 @@ def i_ds(problem, fringe):
             print '<------------------------->'
             break
     return False
-
-
-
-
 def dfs_tree(problem, fringe, depthLimit):
     puzzle = problem.make_child()
     list = []
@@ -66,7 +54,6 @@ def dfs_tree(problem, fringe, depthLimit):
             print 'node -> ',current.nodeId + 1
             current.puzzle_state.print_board()
             print '-----'
-
         if current.puzzle_state.goal_test():
             return current
         expandChoices = current.puzzle_state.possible_moves()
@@ -81,7 +68,6 @@ def dfs_tree(problem, fringe, depthLimit):
                 print '<-- Node Limit Reached -->'
                 print '<------------------------>'
                 return -1
-
 def dfgs(problem, fringe):
     closed = []
     puzzle = problem.make_child()
@@ -89,26 +75,22 @@ def dfgs(problem, fringe):
     root = eight_puzzle_node(puzzle, '.', list, 0)
     fringe.append(root)
     new_id = 1
+    counter = 0
+    first_nodes = []
     while(True):
         if len(fringe) == 0:
-            return False
+            return False, first_nodes
         current = fringe.popleft()
-        if current.nodeId < 5:
-            print '-----'
-            print 'node -> ',current.nodeId + 1
-            current.puzzle_state.print_board()
-            print '-----'
-
+        if counter < 5:
+            first_nodes.append(current)
+            counter += 1
         if current.puzzle_state.goal_test():
-            return current
-
+            return current, first_nodes
         cmp_result = False
         for item in closed:
             cmp_result = current.puzzle_state.compare_2_states(item)
             if cmp_result == True:
                 break
-
-
         if cmp_result == False:
             closed.append(current.puzzle_state)
             expandChoices = current.puzzle_state.possible_moves()
@@ -116,29 +98,15 @@ def dfgs(problem, fringe):
                 new_state = current.puzzle_state
                 solun = current.choiceList
                 new_node = eight_puzzle_node(new_state, choice, solun, new_id)
-
-#                new_cmp_result = False
-#                for item in closed:
-#                    new_cmp_result = new_node.puzzle_state.compare_2_states(item)
-#                    if new_cmp_result == True:
-#                        break
-
-#                if new_cmp_result == False:
-#                    new_id += 1
-#                    fringe.append(new_node)
-#                    print 'new id ->', new_node.nodeId
-
-
                 new_id += 1
                 fringe.append(new_node)
                 print 'new id ->', new_node.nodeId
-                if new_id > 100000:
+                if new_id > 1000:
                     print '<------------------------>'
                     print '<-- Node Limit Reached -->'
                     print '<------------------------>'
-                    return False
-    return False
-
+                    return False, first_nodes
+    return False,first_nodes
 def a_star(problem, fringe, puzzle_choice):
     puzzle = problem.make_child()
     list = []
@@ -147,35 +115,23 @@ def a_star(problem, fringe, puzzle_choice):
     new_id = 1
     fringe.append(root)
     counter = 0
+    first_nodes = []
     while(True):
         if len(fringe) == 0:
             return False
         current = fringe.pop()
         current.h_value = current.puzzle_state.calc_h_value()
         current.g_value = current.puzzle_state.calc_g_value(puzzle_choice)
-
-#        print 'g value ->', current.g_value
-#        print current.nodeId
-#        print current.h_value
-#        current.puzzle_state.print_board()
-#        print '--->'
-
         if counter < 5:
-            print '-----'
-            print 'node -> ',counter + 1
-            current.puzzle_state.print_board()
-            print '-----'
+            first_nodes.append(current)
             counter += 1
-
         if current.puzzle_state.goal_test():
-            return current
-
+            return current, first_nodes
         cmp_result = False
         for item in closed:
             cmp_result = current.puzzle_state.compare_2_states(item)
             if cmp_result == True:
                 break
-
         if cmp_result == False:
             closed.append(current.puzzle_state)
             expandChoices = current.puzzle_state.possible_moves()
@@ -186,32 +142,15 @@ def a_star(problem, fringe, puzzle_choice):
                 new_node = eight_puzzle_node(puzzle, choice, solun, new_id)
                 new_node.h_value = new_node.puzzle_state.calc_h_value()
                 new_node.g_value = new_node.puzzle_state.calc_g_value(puzzle_choice)
-
-#                print 'g value ->', new_node.g_value
-
                 fringe.append(new_node)
                 new_id += 1
                 print 'expand on ->', choice
-
                 if new_id > 100000:
                     print '<------------------------>'
                     print '<-- Node Limit Reached -->'
                     print '<------------------------>'
-                    return False
-
-
-#        fringe.sort(key=attrgetter('g_value'), reverse=False)
+                    return False, first_nodes
         fringe.sort(key=attrgetter('h_value'), reverse=True)
-
-
-
-
-
-
-
-
-
-
 def jadppf_hw2(search_choice, puzzle_choice):
     print '<-------------------->'
     print '<---> Timer Mark <--->'
@@ -228,43 +167,40 @@ def jadppf_hw2(search_choice, puzzle_choice):
         # Use board 1
         game.set_board(1)
     game.print_board()
-    #possible_moves = game.possible_moves()
-    #print
-    #print possible_moves
     print '<---------------------->'
     print '<---> Start Search <--->'
     print '<---------------------->'
     result = False
+    first_nodes = None
     if search_choice == 1:
-
         fringe = deque([])
-        result = dfgs(game, fringe)
+        result, first_nodes = dfgs(game, fringe)
     if search_choice == 2:
         a_star_list = []
-    #result = dfs_tree(game, fringe)
-    #result = i_ds(game, fringe)
-        result = a_star(game, a_star_list, puzzle_choice + 1)
+        result, first_nodes = a_star(game, a_star_list, puzzle_choice + 1)
     if search_choice == 0:
         fringe = deque([])
         result = i_ds(game, fringe)
     if result != False:
+        result.puzzle_state.print_board()
         print 'Solution sequence'
         result.print_choiceList()
         print 'number of moves -> ', len(result.choiceList)
         print 'Num Nodes Expanded'
         result.print_nodeId()
-
-
+    if first_nodes != None:
+        counter = 0
+        for item in first_nodes:
+            print 'node ->', counter
+            item.puzzle_state.print_board()
+            counter += 1
     print '<-------------------->'
     print '<---> Timer Mark <--->'
     now = int(round(time() * 1000))
     print '<-------------------->'
     diff = now - mark
-
     value = str(int(diff)) + ' milli sec'
     print value
-
-
 def main():
     print '\nWelcome to main\n'
     exit = True
@@ -309,17 +245,5 @@ def main():
                 continue
             break
         jadppf_hw2(search_choice - 1, puzzle_choice - 1)
-        #again = str(input('\nAgain (y/n)?\n'))
-        #if again == 'n':
-        #    exit = False
-
-
-
-
-
-
-
-
     print '\nEnd main\n'
-
 main()
