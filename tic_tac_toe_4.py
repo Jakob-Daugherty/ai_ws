@@ -16,6 +16,26 @@ class tic_tac_toe_4():
         copy.next_move = self.next_move
         return copy
 
+    def possible_moves(self):
+        possible_list = []
+        v = 0
+        for r in range(5):
+            for c in range(6):
+                if self.board[r][c] == '_':
+                    index = r,c,v
+                    possible_list.append(index)
+        return possible_list
+
+    def utility(self):
+        p = self.find_next_3iar('O')
+        q = self.find_next_3iar('X')
+        r = self.find_next_2iar('O')
+        t = self.find_next_2iar('X')
+
+        h = 3 * len(p) - 3 * len(q) + len(r) - len(t)
+
+        return h
+
 
 
     def player_move(self, row, column):
@@ -64,61 +84,86 @@ class tic_tac_toe_4():
                 # Check row
                 if self.board[r][c + 1] == value:
                     if self.board[r][c + 2] == '_':
-                        index = r, c + 2
+                        v1 = r
+                        v2 = c + 2
+
+                        index = v1,v2
                         return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 if self.board[r][c - 1] == value:
                     if self.board[r][c - 2] == '_':
-                        index = r, c - 2
+                        rr = r
+                        rc = c - 2
+
+                        index = rr, rc
                         return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 # check col
                 if self.board[r + 1][c] == value:
                     if self.board[r + 2][c] == '_':
-                        index = r + 2, c
+                        rr = r + 2
+                        rc = c
+
+
+                        index = rr, rc
                         return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 if self.board[r - 1][c] == value:
                     if self.board[r - 2][c] == '_':
-                        index = r - 2, c
+                        rr = r - 2
+                        rc = c
+
+                        index = rr, rc
                         return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 # Check diag
                 if self.board[r + 1][c + 1] == value:
                     if self.board[r + 2][c + 2] == '_':
-                        index = r + 2, c + 2
+                        rr = r + 2
+                        rc = c + 2
+
+                        index = rr, rc
                         return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 if self.board[r + 1][c - 1] == value:
                     if self.board[r + 2][c - 2] == '_':
-                        index = r + 2, c - 2
+                        rr = r + 2
+                        rc = c - 2
+
+                        index = rr, rc
                         return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 if self.board[r - 1][c + 1] == value:
                     if self.board[r - 2][c + 2] == '_':
-                        index = r - 2, c + 2
+                        rr = r - 2
+                        rc = c + 2
+
+                        index = rr, rc
                         return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 if self.board[r - 1][c - 1] == value:
                     if self.board[r - 2][c - 2] == '_':
-                        index = r - 2, c - 2
+                        rr = r - 2
+                        rc = c - 2
+
+                        index = rr, rc
                         return_index.append(index)
             except Exception as err:
-                print
+                err = None
         return return_index
 
 
@@ -138,69 +183,85 @@ class tic_tac_toe_4():
                 if self.board[i_r][i_c + 1] == value:
                     if self.board[i_r][i_c + 2] == value:
                         if self.board[i_r][i_c + 3] == '_':
-                            index = i_r, i_c + 3
+                            rr, rc = i_r, i_c + 3
+
+                            index = rr, rc
                             return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 if self.board[i_r][i_c - 1] == value:
                     if self.board[i_r][i_c - 2] == value:
                         if self.board[i_r][i_c - 3] == '_':
-                            index = i_r, i_c - 3
+                            rr, rc = i_r, i_c - 3
+
+                            index = rr, rc
                             return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 # Check col
                 if self.board[i_r + 1][i_c] == value:
                     if self.board[i_r + 2][i_c] == value:
                         if self.board[i_r + 3][i_c] == '_':
-                            index = i_r + 3, i_c
+                            rr, rc = i_r + 3, i_c
+
+                            index = rr, rc
                             return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 if self.board[i_r - 1][i_c] == value:
                     if self.board[i_r - 2][i_c] == value:
                         if self.board[i_r - 3][i_c] == '_':
-                            index = i_r - 3, i_c
+                            rr, rc = i_r - 3, i_c
+
+                            index = rr, rc
                             return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 # Check diag
                 if self.board[i_r + 1][i_c + 1] == value:
                     if self.board[i_r + 2][i_c + 2] == value:
                         if self.board[i_r + 3][i_c + 3] == '_':
-                            index = i_r + 3, i_c + 3
+                            rr, rc = i_r + 3, i_c + 3
+
+                            index = rr,rc
                             return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 if self.board[i_r - 1][i_c + 1] == value:
                     if self.board[i_r - 2][i_c + 2] == value:
                         if self.board[i_r - 3][i_c + 3] == '_':
-                            index = i_r - 3, i_c + 3
+                            rr,rc = i_r - 3, i_c + 3
+
+                            index = rr,rc
                             return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 if self.board[i_r + 1][i_c - 1] == value:
                     if self.board[i_r + 2][i_c - 2] == value:
                         if self.board[i_r + 3][i_c - 3] == '_':
-                            index = i_r + 3, i_c - 3
+                            rr,rc = i_r + 3, i_c - 3
+
+                            index = rr,rc
                             return_index.append(index)
             except Exception as err:
-                print
+                err = None
             try:
                 if self.board[i_r - 1][i_c - 1] == value:
                     if self.board[i_r - 2][i_c - 2] == value:
                         if self.board[i_r - 3][i_c - 3] == '_':
-                            index = i_r - 3, i_c - 3
+                            rr,rc=i_r - 3, i_c - 3
+
+                            index = rr,rc
                             return_index.append(index)
 
             except Exception as err:
-                print
+                err = None
         return return_index
 
 

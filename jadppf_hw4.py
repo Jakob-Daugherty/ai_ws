@@ -1,5 +1,6 @@
 import tic_tac_toe_4
 from random import randint
+from decimal import Decimal
 
 def get_user_choice(prompt, low, high):
     display = 'Please enter: ' + prompt + ' '
@@ -63,6 +64,90 @@ def beginner_move(game):
     game.print_board()
     return game
 
+def max_value(game):
+    if game.goal_test():
+        return game.utility()
+    v = Decimal('Infinity')
+    v = -v
+    actions_list = game.possible_moves()
+    for a in actions_list:
+        cur_r,cur_c,cur_v = a
+        state_game = game.make_copy()
+        move_result = state_game.player_move(r,c)
+        if move_result:
+            cur_v = state_game.utility()
+            a = cur_r,cur_c,cur_v
+    for a in actions_list:
+        cur_r, cur_c, cur_v = a
+        if cur_v > v:
+            v = cur_v
+    return v
+
+def min_value(game):
+
+    if game.goal_test():
+        return game.utility()
+    v = Decimal('Infinity')
+    actions_list = game.possible_moves()
+    for a in actions_list:
+        cur_r, cur_c, cur_v = a
+        state_game = game.make_copy()
+        move_result = state_game.player_move(cur_r, cur_c)
+        if move_result:
+            cur_v = max_value(game)
+            a = cur_r, cur_c, cur_v
+    for a in actions_list:
+        cur_r, cur_c, cur_v = a
+        if cur_v < v:
+            v = cur_v
+    return v
+
+
+
+
+def minimax_decision(game):
+    actions_list = game.possible_moves()
+    max_r = 0
+    max_c = 0
+    max_v = 0
+    for a in actions_list:
+        cur_r, cur_c, cur_v = a
+        result_game = game.make_copy()
+        result = result_game.player_move(cur_r, cur_c)
+        if result:
+            cur_v = min_value(game)
+            a = cur_r, cur_c, cur_v
+    for a in actions_list:
+        cur_r, cur_c, cur_v = a
+        if cur_v > max_v:
+            max_r = cur_r
+            max_c = cur_c
+            max_v = cur_v
+    print '<----------->'
+    print '<- h value -> ', max_v
+    print '<----------->'
+    return max_r,max_c
+
+
+
+
+def advanced_move(game):
+    result = False
+    decision_game = game.make_copy()
+    while(result == False):
+
+        adv_r, adv_c = minimax_decision(decision_game)
+        result = game.player_move(adv_r, adv_c)
+        if result == False:
+            adv_r = randint(0,4)
+            adv_c = randint(0,5)
+            result = game.player_move(adv_r,adv_c)
+    game.print_board()
+    return game
+
+
+
+
 def main():
     print '<-------------->'
     print '<- Start Main ->'
@@ -85,7 +170,7 @@ def main():
             print '<- Winner -> ',winner
             print '<---------->'
             break
-        game = user_move(game)
+        game = advanced_move(game)
         if len(first_eight) < 8:
             display = game.make_copy()
             first_eight.append(display)
@@ -95,6 +180,8 @@ def main():
             print '<- Winner -> ',winner
             print '<---------->'
             break
+        choice = get_user_choice('a number',0,9)
+
 
 
 
