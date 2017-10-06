@@ -1,3 +1,49 @@
+class two_in_a_row():
+    def __init__(self, first_i, second_i, open_i):
+        self.first = first_i
+        self.second = second_i
+        self.open = open_i
+
+    def print_2iar(self):
+        print '1-> ', self.first, ' 2-> ', self.second
+        print 'open -> ', self.open
+
+    def is_in(self, item):
+        first = self.first
+        second = self.second
+        if item == (first or second):
+            return True
+        else:
+            return False
+
+class three_in_a_row():
+
+    def __init__(self, first_i, second_i, third_i, open_i):
+        self.first = first_i
+        self.second = second_i
+        self.third = third_i
+        self.open = open_i
+
+
+    def print_3iar(self):
+        print '1-> ', self.first, ' 2-> ', self.second, ' 3-> ', self.third
+        print 'open -> ', self.open
+
+    def get_open_as_index(self):
+        r,c = self.open
+        return r,c
+
+
+
+    def is_in(self, item):
+        first = self.first
+        second = self.second
+        third = self.third
+        if item == (first or second or third):
+            return True
+        else:
+            return False
+
 
 
 class tic_tac_toe_4():
@@ -33,6 +79,10 @@ class tic_tac_toe_4():
         t = self.find_next_2iar('X')
 
         h = 3 * len(p) - 3 * len(q) + len(r) - len(t)
+
+        print '<--------->'
+        print '<- h ->', h
+        print '<--------->'
 
         return h
 
@@ -70,200 +120,492 @@ class tic_tac_toe_4():
         return False, None
 
     def find_next_2iar(self, value):
-        return_index = []
+        r_mx = 4
+        r_mi = 0
+        c_mx = 5
+        c_mi = 0
+        list_2iar = []
         value_index = []
         for r in range(5):
             for c in range(6):
                 if self.board[r][c] == value:
                     index = r,c
                     value_index.append(index)
-        while len(value_index) != 0:
-            item = value_index.pop()
+        for item in value_index:
+            for index in list_2iar:
+                result = index.is_in(item)
+                if result:
+                    print 'Already in 2 in a row'
+                    continue
             r,c = item
-            try:
-                # Check row
-                if self.board[r][c + 1] == value:
-                    if self.board[r][c + 2] == '_':
-                        v1 = r
-                        v2 = c + 2
 
-                        index = v1,v2
-                        return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                if self.board[r][c - 1] == value:
-                    if self.board[r][c - 2] == '_':
-                        rr = r
-                        rc = c - 2
+            # Check row+ for 2iar
+            test_r, test_c = r,c
+            first = None
+            second = None
+            final = None
+            while(r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r,test_c
+                    elif second == None:
+                        second = test_r,test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second != None:
+                        final = test_r,test_c
+                        new_2iar = two_in_a_row(first, second, final)
+                        list_2iar.append(new_2iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
+                test_c += 1
 
-                        index = rr, rc
-                        return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                # check col
-                if self.board[r + 1][c] == value:
-                    if self.board[r + 2][c] == '_':
-                        rr = r + 2
-                        rc = c
+            # Check row- for 2iar
+            test_r, test_c = r, c
+            first = None
+            second = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second != None:
+                        final = test_r, test_c
+                        new_2iar = two_in_a_row(first, second, final)
+                        list_2iar.append(new_2iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
+                test_c -= 1
 
+            # Check col+ for 2iar
+            test_r, test_c = r, c
+            first = None
+            second = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second != None:
+                        final = test_r, test_c
+                        new_2iar = two_in_a_row(first, second, final)
+                        list_2iar.append(new_2iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
+                test_r += 1
 
-                        index = rr, rc
-                        return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                if self.board[r - 1][c] == value:
-                    if self.board[r - 2][c] == '_':
-                        rr = r - 2
-                        rc = c
+            # Check col- for 2iar
+            test_r, test_c = r, c
+            first = None
+            second = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second != None:
+                        final = test_r, test_c
+                        new_2iar = two_in_a_row(first, second, final)
+                        list_2iar.append(new_2iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
+                test_r -= 1
 
-                        index = rr, rc
-                        return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                # Check diag
-                if self.board[r + 1][c + 1] == value:
-                    if self.board[r + 2][c + 2] == '_':
-                        rr = r + 2
-                        rc = c + 2
+            # Check diag++ for 2iar
+            test_r, test_c = r, c
+            first = None
+            second = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second != None:
+                        final = test_r, test_c
+                        new_2iar = two_in_a_row(first, second, final)
+                        list_2iar.append(new_2iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
+                test_r += 1
+                test_c += 1
 
-                        index = rr, rc
-                        return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                if self.board[r + 1][c - 1] == value:
-                    if self.board[r + 2][c - 2] == '_':
-                        rr = r + 2
-                        rc = c - 2
+            # Check diag+- for 2iar
+            test_r, test_c = r, c
+            first = None
+            second = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second != None:
+                        final = test_r, test_c
+                        new_2iar = two_in_a_row(first, second, final)
+                        list_2iar.append(new_2iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
+                test_r += 1
+                test_c -= 1
 
-                        index = rr, rc
-                        return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                if self.board[r - 1][c + 1] == value:
-                    if self.board[r - 2][c + 2] == '_':
-                        rr = r - 2
-                        rc = c + 2
+            # Check diag-+ for 2iar
+            test_r, test_c = r, c
+            first = None
+            second = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second != None:
+                        final = test_r, test_c
+                        new_2iar = two_in_a_row(first, second, final)
+                        list_2iar.append(new_2iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
+                test_r -= 1
+                test_c += 1
 
-                        index = rr, rc
-                        return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                if self.board[r - 1][c - 1] == value:
-                    if self.board[r - 2][c - 2] == '_':
-                        rr = r - 2
-                        rc = c - 2
+            # Check diag-- for 2iar
+            test_r, test_c = r, c
+            first = None
+            second = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second != None:
+                        final = test_r, test_c
+                        new_2iar = two_in_a_row(first, second, final)
+                        list_2iar.append(new_2iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
+                test_r -= 1
+                test_c -= 1
 
-                        index = rr, rc
-                        return_index.append(index)
-            except Exception as err:
-                err = None
-        return return_index
+        return list_2iar
 
 
     def find_next_3iar(self, value):
-        return_index = []
+        r_mx = 4
+        r_mi = 0
+        c_mx = 5
+        c_mi = 0
+        list_3iar = []
         value_index = []
         for r in range(5):
             for c in range(6):
                 if self.board[r][c] == value:
                     index = r,c
                     value_index.append(index)
-        while len(value_index) != 0:
-            item = value_index.pop()
+        for item in value_index:
+
+            #item = value_index.pop()
+            for index in list_3iar:
+                result = index.is_in(item)
+                if result:
+                    print "Already in 3 in a row"
+                    continue
             i_r, i_c = item
-            try:
-                # Check row
-                if self.board[i_r][i_c + 1] == value:
-                    if self.board[i_r][i_c + 2] == value:
-                        if self.board[i_r][i_c + 3] == '_':
-                            rr, rc = i_r, i_c + 3
 
-                            index = rr, rc
-                            return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                if self.board[i_r][i_c - 1] == value:
-                    if self.board[i_r][i_c - 2] == value:
-                        if self.board[i_r][i_c - 3] == '_':
-                            rr, rc = i_r, i_c - 3
 
-                            index = rr, rc
-                            return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                # Check col
-                if self.board[i_r + 1][i_c] == value:
-                    if self.board[i_r + 2][i_c] == value:
-                        if self.board[i_r + 3][i_c] == '_':
-                            rr, rc = i_r + 3, i_c
+            #check row+ for 3iar
+            test_r, test_c = i_r, i_c
+            first = None
+            second = None
+            third = None
+            final = None
+            while(r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx ):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r,test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    elif third == None:
+                        third = test_r,test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second and third != None:
+                        final = test_r, test_c
+                        new_3iar = three_in_a_row(first, second, third, final)
+                        list_3iar.append(new_3iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
 
-                            index = rr, rc
-                            return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                if self.board[i_r - 1][i_c] == value:
-                    if self.board[i_r - 2][i_c] == value:
-                        if self.board[i_r - 3][i_c] == '_':
-                            rr, rc = i_r - 3, i_c
+                test_c += 1
 
-                            index = rr, rc
-                            return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                # Check diag
-                if self.board[i_r + 1][i_c + 1] == value:
-                    if self.board[i_r + 2][i_c + 2] == value:
-                        if self.board[i_r + 3][i_c + 3] == '_':
-                            rr, rc = i_r + 3, i_c + 3
+            # check row- for 3iar
+            test_r, test_c = i_r, i_c
+            first = None
+            second = None
+            third = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    elif third == None:
+                        third = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second and third != None:
+                        final = test_r, test_c
+                        new_3iar = three_in_a_row(first, second, third, final)
+                        list_3iar.append(new_3iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
 
-                            index = rr,rc
-                            return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                if self.board[i_r - 1][i_c + 1] == value:
-                    if self.board[i_r - 2][i_c + 2] == value:
-                        if self.board[i_r - 3][i_c + 3] == '_':
-                            rr,rc = i_r - 3, i_c + 3
+                test_c -= 1
 
-                            index = rr,rc
-                            return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                if self.board[i_r + 1][i_c - 1] == value:
-                    if self.board[i_r + 2][i_c - 2] == value:
-                        if self.board[i_r + 3][i_c - 3] == '_':
-                            rr,rc = i_r + 3, i_c - 3
+            # check col+ for 3iar
+            test_r, test_c = i_r, i_c
+            first = None
+            second = None
+            third = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    elif third == None:
+                        third = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second and third != None:
+                        final = test_r, test_c
+                        new_3iar = three_in_a_row(first, second, third, final)
+                        list_3iar.append(new_3iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
 
-                            index = rr,rc
-                            return_index.append(index)
-            except Exception as err:
-                err = None
-            try:
-                if self.board[i_r - 1][i_c - 1] == value:
-                    if self.board[i_r - 2][i_c - 2] == value:
-                        if self.board[i_r - 3][i_c - 3] == '_':
-                            rr,rc=i_r - 3, i_c - 3
+                test_r += 1
 
-                            index = rr,rc
-                            return_index.append(index)
+            # check col- for 3iar
+            test_r, test_c = i_r, i_c
+            first = None
+            second = None
+            third = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    elif third == None:
+                        third = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second and third != None:
+                        final = test_r, test_c
+                        new_3iar = three_in_a_row(first, second, third, final)
+                        list_3iar.append(new_3iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
 
-            except Exception as err:
-                err = None
-        return return_index
+                test_r -= 1
 
+            # check diag++ for 3iar
+            test_r, test_c = i_r, i_c
+            first = None
+            second = None
+            third = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    elif third == None:
+                        third = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second and third != None:
+                        final = test_r, test_c
+                        new_3iar = three_in_a_row(first, second, third, final)
+                        list_3iar.append(new_3iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
+
+                test_c += 1
+                test_r += 1
+
+            # check diag+- for 3iar
+            test_r, test_c = i_r, i_c
+            first = None
+            second = None
+            third = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    elif third == None:
+                        third = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second and third != None:
+                        final = test_r, test_c
+                        new_3iar = three_in_a_row(first, second, third, final)
+                        list_3iar.append(new_3iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
+                test_r += 1
+                test_c -= 1
+
+            # check diag-+ for 3iar
+            test_r, test_c = i_r, i_c
+            first = None
+            second = None
+            third = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    elif third == None:
+                        third = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second and third != None:
+                        final = test_r, test_c
+                        new_3iar = three_in_a_row(first, second, third, final)
+                        list_3iar.append(new_3iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
+                test_r -= 1
+                test_c += 1
+
+            # check diag-- for 3iar
+            test_r, test_c = i_r, i_c
+            first = None
+            second = None
+            third = None
+            final = None
+            while (r_mi <= test_r <= r_mx and c_mi <= test_c <= c_mx):
+                if self.board[test_r][test_c] == value:
+                    if first == None:
+                        first = test_r, test_c
+                    elif second == None:
+                        second = test_r, test_c
+                    elif third == None:
+                        third = test_r, test_c
+                    else:
+                        break
+                elif self.board[test_r][test_c] == '_':
+                    if first and second and third != None:
+                        final = test_r, test_c
+                        new_3iar = three_in_a_row(first, second, third, final)
+                        list_3iar.append(new_3iar)
+                        break
+                    else:
+                        break
+                else:
+                    break
+                test_r -= 1
+                test_c -= 1
+
+
+
+
+        return list_3iar
 
 
     def check_diag_left(self, value):

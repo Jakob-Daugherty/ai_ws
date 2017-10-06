@@ -1,6 +1,7 @@
 import tic_tac_toe_4
 from random import randint
 from decimal import Decimal
+import operator
 
 def get_user_choice(prompt, low, high):
     display = 'Please enter: ' + prompt + ' '
@@ -34,7 +35,9 @@ def user_move(game):
 def beginner_set_move(game):
     moves_list = game.find_next_3iar('X')
     if len(moves_list) > 0:
-        move = moves_list.pop()
+        three_iar = moves_list.pop()
+        three_iar.print_3iar()
+        move = three_iar.get_open_as_index()
         row,col = move
         print '<----------- row ->', row
         print '<- trying to win ->'
@@ -43,7 +46,9 @@ def beginner_set_move(game):
             return row,col
     opp_moves_list = game.find_next_3iar('O')
     if len(opp_moves_list) > 0:
-        move = opp_moves_list.pop()
+        three_iar = opp_moves_list.pop()
+        three_iar.print_3iar()
+        move = three_iar.get_open_as_index()
         row,col = move
         print '<------------- row ->', row
         print '<- trying to block ->'
@@ -64,11 +69,9 @@ def beginner_move(game):
     game.print_board()
     return game
 
-def max_value(game):
+def adv_max_value(game):
     if game.goal_test():
         return game.utility()
-    v = Decimal('Infinity')
-    v = -v
     actions_list = game.possible_moves()
     for a in actions_list:
         cur_r,cur_c,cur_v = a
@@ -77,35 +80,32 @@ def max_value(game):
         if move_result:
             cur_v = state_game.utility()
             a = cur_r,cur_c,cur_v
-    for a in actions_list:
-        cur_r, cur_c, cur_v = a
-        if cur_v > v:
-            v = cur_v
+    actions_list.sort(key=operator.itemgetter(2))
+    item = actions_list.pop()
+    r,c,v = item
     return v
 
-def min_value(game):
+def adv_min_value(game):
 
     if game.goal_test():
         return game.utility()
-    v = Decimal('Infinity')
     actions_list = game.possible_moves()
     for a in actions_list:
         cur_r, cur_c, cur_v = a
         state_game = game.make_copy()
         move_result = state_game.player_move(cur_r, cur_c)
         if move_result:
-            cur_v = max_value(game)
+            cur_v = adv_max_value(state_game)
             a = cur_r, cur_c, cur_v
-    for a in actions_list:
-        cur_r, cur_c, cur_v = a
-        if cur_v < v:
-            v = cur_v
+    actions_list.sort(key=operator.itemgetter(2), reverse=Ture)
+    item = actions_list.pop()
+    r,c,v = item
     return v
 
 
 
 
-def minimax_decision(game):
+def adv_minimax_decision(game):
     actions_list = game.possible_moves()
     max_r = 0
     max_c = 0
@@ -115,18 +115,11 @@ def minimax_decision(game):
         result_game = game.make_copy()
         result = result_game.player_move(cur_r, cur_c)
         if result:
-            cur_v = min_value(game)
+            cur_v = adv_min_value(result_game)
             a = cur_r, cur_c, cur_v
-    for a in actions_list:
-        cur_r, cur_c, cur_v = a
-        if cur_v > max_v:
-            max_r = cur_r
-            max_c = cur_c
-            max_v = cur_v
-    print '<----------->'
-    print '<- h value -> ', max_v
-    print '<----------->'
-    return max_r,max_c
+    actions_list.sort(key=operator.itemgetter(2))
+
+    return actions_list
 
 
 
@@ -134,18 +127,107 @@ def minimax_decision(game):
 def advanced_move(game):
     result = False
     decision_game = game.make_copy()
+    decisions_list = adv_minimax_decision(decision_game)
     while(result == False):
-
-        adv_r, adv_c = minimax_decision(decision_game)
+        decision = decisions_list.pop()
+        adv_r, adv_c, v = decision
+        print '<----------->'
+        print '<- h value -> ', v
+        print '<----------->'
         result = game.player_move(adv_r, adv_c)
-        if result == False:
-            adv_r = randint(0,4)
-            adv_c = randint(0,5)
-            result = game.player_move(adv_r,adv_c)
     game.print_board()
     return game
 
+def master_max2_value(game):
+    if game.goal_test():
+        return game.utility()
+    actions_list = game.possible_moves()
+    for a in actions_list:
+        r,c,v = a
+        result_game = game.make_copy()
+        result = result_game.player_move(r,c)
+        if result:
+            v = result_game.utility()
+            a = r,c,v
+    actions_list.sort(key=operator.itemgetter(2))
+    item = actions_list.pop()
+    r,c,v = item
+    return v
 
+def master_min2_value(game):
+    if game.goal_test():
+        return game.utility()
+    actions_list = game.possible_moves()
+    for a in actions_list:
+        r,c,v = a
+        result_game = game.make_copy()
+        result = result_game.player_move(r,c)
+        if result:
+            v = master_max2_value(result_game)
+            a = r,c,v
+    actions_list.sort(key=operator.itemgetter(2), reverse=True)
+    item = actions_list.pop()
+    r,c,v = item
+    return v
+
+def master_max1_value(game):
+    if game.goal_test():
+        return game.utility()
+    actions_list = game.possible_moves()
+    for a in actions_list:
+        r,c,v = a
+        result_game = game.make_copy()
+        result = result_game.player_move(r,c)
+        if result:
+            v = master_min2_value(result_game)
+            a = r,c,v
+    actions_list.sort(key=operator.itemgetter(2))
+    item = actions_list.pop()
+    r,c,v = item
+    return v
+
+def master_min1_value(game):
+    if game.goal_test():
+        return game.utility()
+    actions_list = game.possible_moves()
+    for a in actions_list:
+        r,c,v = a
+        result_game = game.make_copy()
+        result = result_game.player_move(r,c)
+        if result:
+            v = master_max1_value(result_game)
+            a = r,c,v
+    actions_list.sort(key=operator.itemgetter(2), reverse=True)
+    item = actions_list.pop()
+    r,c,v = item
+    return v
+
+def master_minimax_decision(game):
+    actions_list = game.possible_moves()
+    for a in actions_list:
+        r,c,v = a
+        result_game = game.make_copy()
+        result = result_game.player_move(r,c)
+        if result:
+            v = master_min1_value(result_game)
+            a = r,c,v
+    actions_list.sort(key=operator.itemgetter(2))
+    return actions_list
+
+
+def master_move(game):
+    result = False
+    decision_game = game.make_copy()
+    decisions_list = master_minimax_decision(decision_game)
+    while result == False:
+        decision = decisions_list.pop()
+        master_r, master_c, v = decision
+        print '<----------->'
+        print '<- h value -> ', v
+        print '<----------->'
+        result = game.player_move(master_r,master_c)
+    game.print_board()
+    return game
 
 
 def main():
@@ -170,7 +252,9 @@ def main():
             print '<- Winner -> ',winner
             print '<---------->'
             break
-        game = advanced_move(game)
+        game = master_move(game)
+        #game = advanced_move(game)
+        #game = user_move(game)
         if len(first_eight) < 8:
             display = game.make_copy()
             first_eight.append(display)
