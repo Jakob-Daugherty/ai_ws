@@ -1,6 +1,6 @@
 import tic_tac_toe_4
 from random import randint
-from decimal import Decimal
+from time import time
 import operator
 
 def get_user_choice(prompt, low, high):
@@ -69,13 +69,14 @@ def beginner_move(game):
     game.print_board()
     return game
 
-def adv_max_value(game):
+def adv_max_value(game, node_count):
     if game.goal_test():
         return game.utility()
     actions_list = game.possible_moves()
     for a in actions_list:
         cur_r,cur_c,cur_v = a
         state_game = game.make_copy()
+        node_count += 1
         move_result = state_game.player_move(r,c)
         if move_result:
             cur_v = state_game.utility()
@@ -83,9 +84,9 @@ def adv_max_value(game):
     actions_list.sort(key=operator.itemgetter(2))
     item = actions_list.pop()
     r,c,v = item
-    return v
+    return v, node_count
 
-def adv_min_value(game):
+def adv_min_value(game, node_count):
 
     if game.goal_test():
         return game.utility()
@@ -93,19 +94,20 @@ def adv_min_value(game):
     for a in actions_list:
         cur_r, cur_c, cur_v = a
         state_game = game.make_copy()
+        node_count += 1
         move_result = state_game.player_move(cur_r, cur_c)
         if move_result:
-            cur_v = adv_max_value(state_game)
+            cur_v, node_count = adv_max_value(state_game, node_count)
             a = cur_r, cur_c, cur_v
-    actions_list.sort(key=operator.itemgetter(2), reverse=Ture)
-    item = actions_list.pop()
+    actions_list.sort(key=operator.itemgetter(2))
+    item = actions_list(0)
     r,c,v = item
-    return v
+    return v, node_count
 
 
 
 
-def adv_minimax_decision(game):
+def adv_minimax_decision(game, node_count):
     actions_list = game.possible_moves()
     max_r = 0
     max_c = 0
@@ -113,30 +115,36 @@ def adv_minimax_decision(game):
     for a in actions_list:
         cur_r, cur_c, cur_v = a
         result_game = game.make_copy()
+        node_count += 1
         result = result_game.player_move(cur_r, cur_c)
         if result:
-            cur_v = adv_min_value(result_game)
+            cur_v, node_count = adv_min_value(result_game,node_count)
             a = cur_r, cur_c, cur_v
     actions_list.sort(key=operator.itemgetter(2))
 
-    return actions_list
+    return actions_list, node_count
 
 
 
 
 def advanced_move(game):
+    node_count = 0
     result = False
     decision_game = game.make_copy()
-    decisions_list = adv_minimax_decision(decision_game)
+    node_count += 1
+    decisions_list, node_count = adv_minimax_decision(decision_game, node_count)
     while(result == False):
         decision = decisions_list.pop()
         adv_r, adv_c, v = decision
         print '<----------->'
         print '<- h value -> ', v
         print '<----------->'
+        if v == 0:
+            adv_r = randint(0,4)
+            adv_c = randint(0,5)
         result = game.player_move(adv_r, adv_c)
     game.print_board()
-    return game
+    return game, node_count
 
 def master_max2_value(game):
     if game.goal_test():
@@ -165,8 +173,8 @@ def master_min2_value(game):
         if result:
             v = master_max2_value(result_game)
             a = r,c,v
-    actions_list.sort(key=operator.itemgetter(2), reverse=True)
-    item = actions_list.pop()
+    actions_list.sort(key=operator.itemgetter(2))
+    item = actions_list(0)
     r,c,v = item
     return v
 
@@ -197,8 +205,8 @@ def master_min1_value(game):
         if result:
             v = master_max1_value(result_game)
             a = r,c,v
-    actions_list.sort(key=operator.itemgetter(2), reverse=True)
-    item = actions_list.pop()
+    actions_list.sort(key=operator.itemgetter(2))
+    item = actions_list(0)
     r,c,v = item
     return v
 
@@ -216,9 +224,11 @@ def master_minimax_decision(game):
 
 
 def master_move(game):
+    node_count = -1
     result = False
     decision_game = game.make_copy()
-    decisions_list = master_minimax_decision(decision_game)
+    node_count += 1
+    decisions_list, node_count = master_minimax_decision(decision_game, node_count)
     while result == False:
         decision = decisions_list.pop()
         master_r, master_c, v = decision
@@ -227,10 +237,11 @@ def master_move(game):
         print '<----------->'
         result = game.player_move(master_r,master_c)
     game.print_board()
-    return game
+    return game, node_count
 
 
 def main():
+    ncount_time = []
     print '<-------------->'
     print '<- Start Main ->'
     print '<-------------->'
@@ -252,9 +263,24 @@ def main():
             print '<- Winner -> ',winner
             print '<---------->'
             break
-        game = master_move(game)
-        #game = advanced_move(game)
+        #game = master_move(game)
+        print '<------------------->'
+        print '<--- TIMER START --->'
+        value = time()
+        mark = int(round( value * 1000))
+        print '<------------------->'
+
+        game, node_count = advanced_move(game)
         #game = user_move(game)
+
+        print '<------------------->'
+        print '<--- Timer Finish -->'
+        now = int(round(time() * 1000))
+        print '<------------------->'
+        diff = now - mark
+        value = str(int(diff))
+        item = node_count, value
+        ncount_time.append(item)
         if len(first_eight) < 8:
             display = game.make_copy()
             first_eight.append(display)
@@ -264,7 +290,7 @@ def main():
             print '<- Winner -> ',winner
             print '<---------->'
             break
-        choice = get_user_choice('a number',0,9)
+        #choice = get_user_choice('a number',0,9)
 
 
 
@@ -281,6 +307,14 @@ def main():
 
     print 'Final game state'
     game.print_board()
+
+    print
+    print
+    count = 1
+    for item in ncount_time:
+        n_count, time = item
+        print 'Move-> ', count, ' node_count-> ', n_count, ' in time-> ', time, ' millisec'
+        count += 1
 
     print '<------------>'
     print '<- End Main ->'

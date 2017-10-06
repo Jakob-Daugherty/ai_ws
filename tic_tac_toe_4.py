@@ -80,9 +80,9 @@ class tic_tac_toe_4():
 
         h = 3 * len(p) - 3 * len(q) + len(r) - len(t)
 
-        print '<--------->'
-        print '<- h ->', h
-        print '<--------->'
+        #print '<--------->'
+        #print '<- h ->', h
+        #print '<--------->'
 
         return h
 
