@@ -1,6 +1,6 @@
 import tic_tac_toe_4
 from random import randint
-from time import time
+
 import operator
 
 def get_user_choice(prompt, low, high):
@@ -71,7 +71,7 @@ def beginner_move(game):
 
 def adv_max_value(game, node_count):
     if game.goal_test():
-        return game.utility()
+        return game.utility(), node_count
     actions_list = game.possible_moves()
     for a in actions_list:
         cur_r,cur_c,cur_v = a
@@ -89,7 +89,7 @@ def adv_max_value(game, node_count):
 def adv_min_value(game, node_count):
 
     if game.goal_test():
-        return game.utility()
+        return game.utility(), node_count
     actions_list = game.possible_moves()
     for a in actions_list:
         cur_r, cur_c, cur_v = a
@@ -146,13 +146,14 @@ def advanced_move(game):
     game.print_board()
     return game, node_count
 
-def master_max2_value(game):
+def master_max2_value(game, node_count):
     if game.goal_test():
-        return game.utility()
+        return game.utility(), node_count
     actions_list = game.possible_moves()
     for a in actions_list:
         r,c,v = a
         result_game = game.make_copy()
+        node_count += 1
         result = result_game.player_move(r,c)
         if result:
             v = result_game.utility()
@@ -160,71 +161,75 @@ def master_max2_value(game):
     actions_list.sort(key=operator.itemgetter(2))
     item = actions_list.pop()
     r,c,v = item
-    return v
+    return v, node_count
 
-def master_min2_value(game):
+def master_min2_value(game, node_count):
     if game.goal_test():
-        return game.utility()
+        return game.utility(), node_count
     actions_list = game.possible_moves()
     for a in actions_list:
         r,c,v = a
         result_game = game.make_copy()
+        node_count += 1
         result = result_game.player_move(r,c)
         if result:
-            v = master_max2_value(result_game)
+            v, node_count = master_max2_value(result_game, node_count)
             a = r,c,v
     actions_list.sort(key=operator.itemgetter(2))
     item = actions_list(0)
     r,c,v = item
-    return v
+    return v, node_count
 
-def master_max1_value(game):
+def master_max1_value(game, node_count):
     if game.goal_test():
-        return game.utility()
+        return game.utility(), node_count
     actions_list = game.possible_moves()
     for a in actions_list:
         r,c,v = a
         result_game = game.make_copy()
+        node_count += 1
         result = result_game.player_move(r,c)
         if result:
-            v = master_min2_value(result_game)
+            v, node_count = master_min2_value(result_game, node_count)
             a = r,c,v
     actions_list.sort(key=operator.itemgetter(2))
     item = actions_list.pop()
     r,c,v = item
-    return v
+    return v, node_count
 
-def master_min1_value(game):
+def master_min1_value(game, node_count):
     if game.goal_test():
-        return game.utility()
+        return game.utility(), node_count
     actions_list = game.possible_moves()
     for a in actions_list:
         r,c,v = a
         result_game = game.make_copy()
+        node_count += 1
         result = result_game.player_move(r,c)
         if result:
-            v = master_max1_value(result_game)
+            v, node_count = master_max1_value(result_game, node_count)
             a = r,c,v
     actions_list.sort(key=operator.itemgetter(2))
     item = actions_list(0)
     r,c,v = item
-    return v
+    return v, node_count
 
-def master_minimax_decision(game):
+def master_minimax_decision(game, node_count):
     actions_list = game.possible_moves()
     for a in actions_list:
         r,c,v = a
         result_game = game.make_copy()
+        node_count += 1
         result = result_game.player_move(r,c)
         if result:
-            v = master_min1_value(result_game)
+            v, node_count = master_min1_value(result_game, node_count)
             a = r,c,v
     actions_list.sort(key=operator.itemgetter(2))
-    return actions_list
+    return actions_list, node_count
 
 
 def master_move(game):
-    node_count = -1
+    node_count = 0
     result = False
     decision_game = game.make_copy()
     node_count += 1
@@ -241,7 +246,9 @@ def master_move(game):
 
 
 def main():
+    from time import time
     ncount_time = []
+    master_time = []
     print '<-------------->'
     print '<- Start Main ->'
     print '<-------------->'
@@ -250,10 +257,21 @@ def main():
     game = tic_tac_toe_4.tic_tac_toe_4()
     while goal_reached == False:
 
-
-
+        print '<------------------->'
+        print '<--- TIMER START --->'
+        value = time()
+        mark = int(round(value * 1000))
+        print '<------------------->'
         #game.print_board()
-        game = beginner_move(game)
+        game, node_count = advanced_move(game)
+        print '<------------------->'
+        print '<--- Timer Finish -->'
+        now = int(round(time() * 1000))
+        print '<------------------->'
+        diff = now - mark
+        value = str(int(diff))
+        item = node_count, value
+        ncount_time.append(item)
         if len(first_eight) < 8:
             display = game.make_copy()
             first_eight.append(display)
@@ -264,13 +282,15 @@ def main():
             print '<---------->'
             break
         #game = master_move(game)
+
         print '<------------------->'
         print '<--- TIMER START --->'
         value = time()
-        mark = int(round( value * 1000))
+        mark = int(round(value * 1000))
         print '<------------------->'
 
-        game, node_count = advanced_move(game)
+
+        game, node_count = master_move(game)
         #game = user_move(game)
 
         print '<------------------->'
@@ -280,7 +300,9 @@ def main():
         diff = now - mark
         value = str(int(diff))
         item = node_count, value
-        ncount_time.append(item)
+        master_time.append(item)
+
+
         if len(first_eight) < 8:
             display = game.make_copy()
             first_eight.append(display)
@@ -312,6 +334,14 @@ def main():
     print
     count = 1
     for item in ncount_time:
+        n_count, time = item
+        print 'Move-> ', count, ' node_count-> ', n_count, ' in time-> ', time, ' millisec'
+        count += 1
+
+    print
+    print
+    count = 1
+    for item in master_time:
         n_count, time = item
         print 'Move-> ', count, ' node_count-> ', n_count, ' in time-> ', time, ' millisec'
         count += 1
