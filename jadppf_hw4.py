@@ -1,6 +1,5 @@
 import tic_tac_toe_4
 from random import randint
-
 import operator
 
 def get_user_choice(prompt, low, high):
@@ -263,7 +262,7 @@ def main():
         mark = int(round(value * 1000))
         print '<------------------->'
         #game.print_board()
-        game, node_count = advanced_move(game)
+        game, node_count = user_move(game)
         print '<------------------->'
         print '<--- Timer Finish -->'
         now = int(round(time() * 1000))
@@ -290,7 +289,7 @@ def main():
         print '<------------------->'
 
 
-        game, node_count = master_move(game)
+        game, node_count = beginner_move(game)
         #game = user_move(game)
 
         print '<------------------->'
